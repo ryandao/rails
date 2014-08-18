@@ -43,6 +43,8 @@ module ActionDispatch
       autoload :Request
       autoload :Response
     end
+
+    autoload :WebConsole
   end
 
   autoload_under 'middleware' do
@@ -102,4 +104,12 @@ autoload :Mime, 'action_dispatch/http/mime_type'
 ActiveSupport.on_load(:action_view) do
   ActionView::Base.default_formats ||= Mime::SET.symbols
   ActionView::Template::Types.delegate_to Mime
+  include ActionDispatch::WebConsole::ViewHelper
 end
+
+ActiveSupport.on_load :action_controller do
+  prepend_view_path File.dirname(__FILE__) + '/action_dispatch/middleware/templates'
+  include ActionDispatch::WebConsole::ControllerHelper
+end
+
+require 'action_dispatch/web_console/exception_extension'
